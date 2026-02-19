@@ -4,18 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RideThis?</title>
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./styles.css?v=20260219j" />
 </head>
 <body>
   <div class="bg"></div>
+  <nav class="global-nav">
+    <div class="lang-switch">
+      <button id="langKoBtn" class="lang-btn" type="button">KO</button>
+      <button id="langEnBtn" class="lang-btn active" type="button">EN</button>
+    </div>
+  </nav>
   <main class="app">
     <header class="topbar">
       <div class="topbar-row">
         <h1 id="titleMain">RideThis?</h1>
-        <div class="lang-switch">
-          <button id="langKoBtn" class="lang-btn" type="button">KO</button>
-          <button id="langEnBtn" class="lang-btn active" type="button">EN</button>
-        </div>
       </div>
       <p id="titleSub">We will recommend the attractions that fit you best right now.</p>
     </header>
@@ -25,20 +27,19 @@
       <p class="step-indicator"><span id="stepNow">1</span>/2</p>
       <form id="profileForm" class="wizard">
         <div id="step1" class="wizard-step">
-          <h3 id="step1Title">What are your (or your child's) age and height?</h3>
-          <div class="grid two-col">
-            <label><span id="labelProfileType">Profile</span>
-              <select name="profile_type">
-                <option id="optSelf" value="self">Self</option>
-                <option id="optChild" value="child">Child</option>
-              </select>
-            </label>
-            <label><span id="labelAge">Age</span>
-              <input type="number" name="age" value="20" min="0" max="120" required />
-            </label>
-            <label><span id="labelHeight">Height (cm)</span>
-              <input type="number" name="height_cm" value="120" min="50" max="250" required />
-            </label>
+          <div class="question-card">
+            <div class="question-head">
+              <span class="q-number">1</span>
+              <h3 id="step1Title">What are your (or your child's) age and height?</h3>
+            </div>
+            <div class="grid two-col">
+              <label><span id="labelAge">Age</span>
+                <input type="number" name="age" value="20" min="0" max="120" required />
+              </label>
+              <label><span id="labelHeight">Height (cm)</span>
+                <input type="number" name="height_cm" value="120" min="50" max="250" required />
+              </label>
+            </div>
           </div>
           <div class="wizard-actions">
             <button id="toStep2Btn" class="primary" type="button">Next</button>
@@ -46,19 +47,24 @@
         </div>
 
         <div id="step2" class="wizard-step hidden">
-          <h3 id="step2Title">Choose your tags</h3>
-          <fieldset class="tags-field">
-            <legend id="legendSelected">Preferred Tags</legend>
-            <div id="selectedTags" class="pill-grid"></div>
-          </fieldset>
-          <fieldset class="tags-field">
-            <legend id="legendMust">Must-Ride Tags</legend>
-            <div id="mustRideTags" class="pill-grid"></div>
-          </fieldset>
-          <fieldset class="tags-field">
-            <legend id="legendAvoid">Avoid Tags</legend>
-            <div id="avoidTags" class="pill-grid"></div>
-          </fieldset>
+          <div class="question-card">
+            <div class="question-head">
+              <span class="q-number">2</span>
+              <h3 id="step2Title">Choose your tags</h3>
+            </div>
+            <fieldset class="tags-field">
+              <legend id="legendSelected">Preferred Tags</legend>
+              <div id="selectedTags" class="pill-grid"></div>
+            </fieldset>
+            <fieldset class="tags-field">
+              <legend id="legendMust">Must-Ride Tags</legend>
+              <div id="mustRideTags" class="pill-grid"></div>
+            </fieldset>
+            <fieldset class="tags-field">
+              <legend id="legendAvoid">Avoid Tags</legend>
+              <div id="avoidTags" class="pill-grid"></div>
+            </fieldset>
+          </div>
           <div class="wizard-actions">
             <button id="backToStep1Btn" class="secondary" type="button">Back</button>
             <button id="startRecoBtn" class="primary" type="submit">Start Recommendation</button>
@@ -69,11 +75,93 @@
     </section>
 
     <section id="results" class="panel hidden">
-      <div id="specialWrap"></div>
-      <h2 id="resultsTitle">Top 5 Recommendations</h2>
-      <div id="cards" class="cards"></div>
-      <h3 id="blacklistTitle">Do Not Recommend Again</h3>
-      <div id="blacklist" class="cards cards-sm"></div>
+      <div class="results-meta">
+        <h2 id="resultsTitle">Explore Picks & Shows</h2>
+        <div class="results-actions">
+          <button id="refreshBtn" class="secondary" type="button">Refresh</button>
+          <button id="resetBtn" class="secondary" type="button">Reset</button>
+        </div>
+      </div>
+      <div class="refresh-status">
+        <p id="refreshMeta" class="refresh-meta"></p>
+      </div>
+
+      <div class="tabs">
+        <button id="tabRecoBtn" class="tab-btn active" type="button">Recommended</button>
+        <button id="tabAllAttrBtn" class="tab-btn" type="button">All Attractions</button>
+        <button id="tabStageBtn" class="tab-btn" type="button">Stage Shows</button>
+        <button id="tabParadeBtn" class="tab-btn" type="button">Parade</button>
+        <button id="tabNightBtn" class="tab-btn" type="button">Night</button>
+      </div>
+
+      <section id="tabRecoPanel">
+        <div id="specialWrap"></div>
+        <div id="cards" class="cards"></div>
+        <h3 id="blacklistTitle">Do Not Recommend Again</h3>
+        <div id="blacklist" class="cards cards-sm"></div>
+      </section>
+
+      <section id="tabAllAttrPanel" class="tab-panel hidden">
+        <div class="filter-bar">
+          <label>
+            <span id="allFilterNameLabel">Name</span>
+            <input id="allSearchName" type="text" placeholder="Search by name" />
+          </label>
+          <label>
+            <span id="allFilterDistanceLabel">Max Distance</span>
+            <select id="allFilterDistance">
+              <option value="">All</option>
+              <option value="500">500m</option>
+              <option value="1000">1km</option>
+              <option value="2000">2km</option>
+            </select>
+          </label>
+          <label>
+            <span id="allFilterWaitLabel">Max Wait</span>
+            <select id="allFilterWait">
+              <option value="">All</option>
+              <option value="20">20 min</option>
+              <option value="40">40 min</option>
+              <option value="60">60 min</option>
+            </select>
+          </label>
+          <label>
+            <span id="allFilterTagLabel">Tag</span>
+            <details id="allTagDetails" class="tag-details">
+              <summary id="allTagSummary">Tags (0)</summary>
+              <input id="allTagSearch" type="text" placeholder="Search tags" />
+              <div id="allFilterTags" class="pill-grid"></div>
+            </details>
+          </label>
+          <label>
+            <span id="allSortLabel">Sort</span>
+            <select id="allSort">
+              <option value="distance">Distance</option>
+              <option value="wait">Wait</option>
+              <option value="name">Name</option>
+              <option value="popularity">Popularity</option>
+            </select>
+          </label>
+        </div>
+        <div id="allAttrCards" class="cards"></div>
+      </section>
+
+      <section id="tabStagePanel" class="tab-panel hidden">
+        <div id="stageCards" class="cards"></div>
+        <section id="closedPanel" class="tab-panel">
+          <h3 id="closedTitle">Closed Facilities</h3>
+          <div id="closedCards" class="cards cards-sm"></div>
+        </section>
+      </section>
+
+      <section id="tabParadePanel" class="tab-panel hidden">
+        <div id="paradeCard" class="cards cards-sm"></div>
+      </section>
+
+      <section id="tabNightPanel" class="tab-panel hidden">
+        <div id="nightCard" class="cards cards-sm"></div>
+      </section>
+
     </section>
   </main>
 
@@ -92,12 +180,16 @@
       <p class="distance"></p>
       <p class="tags"></p>
       <div class="actions">
-        <button class="secondary detail">Details</button>
         <button class="danger ban">Do Not Recommend</button>
       </div>
     </article>
   </template>
 
-  <script src="./app.js" type="module"></script>
+  <dialog id="detailDialog" class="detail-dialog">
+    <button id="detailCloseBtn" class="detail-close" type="button">×</button>
+    <div id="detailBody"></div>
+  </dialog>
+
+  <script src="./app.js?v=20260219k" type="module"></script>
 </body>
 </html>
