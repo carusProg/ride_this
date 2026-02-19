@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>이거탈래? | RideThis?</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="bg"></div>
+  <main class="app">
+    <header class="topbar">
+      <h1>이거탈래?<span>RideThis?</span></h1>
+      <p>지금 가장 잘 맞는 어트랙션을 추천해드릴게요.</p>
+    </header>
+
+    <section id="onboarding" class="panel">
+      <h2>프로필 입력</h2>
+      <form id="profileForm" class="grid">
+        <label>구분
+          <select name="profile_type">
+            <option value="self">본인</option>
+            <option value="child">아이</option>
+          </select>
+        </label>
+        <label>성별
+          <select name="gender">
+            <option value="male">남성</option>
+            <option value="female">여성</option>
+            <option value="other">기타</option>
+            <option value="prefer_not_to_say">선택안함</option>
+          </select>
+        </label>
+        <label>나이
+          <input type="number" name="age" value="20" min="0" max="120" required />
+        </label>
+        <label>키(cm)
+          <input type="number" name="height_cm" value="120" min="50" max="250" required />
+        </label>
+
+        <fieldset class="tags-field">
+          <legend>선호 태그</legend>
+          <div id="selectedTags" class="tag-grid"></div>
+        </fieldset>
+
+        <fieldset class="tags-field">
+          <legend>꼭 타고 싶은 태그</legend>
+          <div id="mustRideTags" class="tag-grid"></div>
+        </fieldset>
+
+        <fieldset class="tags-field">
+          <legend>회피 태그</legend>
+          <div id="avoidTags" class="tag-grid"></div>
+        </fieldset>
+
+        <button class="primary" type="submit">추천 시작</button>
+      </form>
+    </section>
+
+    <section id="results" class="panel hidden">
+      <div id="specialWrap"></div>
+      <h2>추천 어트랙션 5</h2>
+      <div id="cards" class="cards"></div>
+      <h3>다시 추천 안함</h3>
+      <div id="blacklist" class="cards cards-sm"></div>
+    </section>
+  </main>
+
+  <button id="nextBtn" class="next-btn hidden">다음추천</button>
+
+  <div id="loading" class="loading hidden">
+    <div>생각중입니다...</div>
+  </div>
+
+  <template id="cardTpl">
+    <article class="card">
+      <div class="card-head">
+        <h4 class="name"></h4>
+        <span class="wait"></span>
+      </div>
+      <p class="distance"></p>
+      <p class="tags"></p>
+      <div class="actions">
+        <button class="secondary detail">세부보기</button>
+        <button class="danger ban">다시 추천 안함</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="./app.js" type="module"></script>
+</body>
+</html>
