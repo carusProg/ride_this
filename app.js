@@ -65,11 +65,13 @@ const el = {
   allFilterNameLabel: document.getElementById("allFilterNameLabel"),
   allFilterDistanceLabel: document.getElementById("allFilterDistanceLabel"),
   allFilterWaitLabel: document.getElementById("allFilterWaitLabel"),
+  allFilterOperationLabel: document.getElementById("allFilterOperationLabel"),
   allFilterTagLabel: document.getElementById("allFilterTagLabel"),
   allSortLabel: document.getElementById("allSortLabel"),
   allSearchName: document.getElementById("allSearchName"),
   allFilterDistance: document.getElementById("allFilterDistance"),
   allFilterWait: document.getElementById("allFilterWait"),
+  allFilterOperation: document.getElementById("allFilterOperation"),
   allTagDetails: document.getElementById("allTagDetails"),
   allTagSummary: document.getElementById("allTagSummary"),
   allTagSearch: document.getElementById("allTagSearch"),
@@ -174,6 +176,11 @@ const I18N = {
     allFilterNamePlaceholder: "이름으로 검색",
     allFilterDistanceLabel: "최대 거리",
     allFilterWaitLabel: "최대 대기",
+    allFilterOperationLabel: "운영상태",
+    allStatusAll: "전체",
+    allStatusOperating: "운영중",
+    allStatusNotOperating: "미운영",
+    allStatusUnknown: "확인불가",
     allFilterTagLabel: "태그",
     allTagSummary: "태그 ({count})",
     allTagSearchPlaceholder: "태그 검색",
@@ -248,6 +255,11 @@ const I18N = {
     allFilterNamePlaceholder: "Search by name",
     allFilterDistanceLabel: "Max Distance",
     allFilterWaitLabel: "Max Wait",
+    allFilterOperationLabel: "Operation",
+    allStatusAll: "All",
+    allStatusOperating: "Operating",
+    allStatusNotOperating: "Not Operating",
+    allStatusUnknown: "Unknown",
     allFilterTagLabel: "Tag",
     allTagSummary: "Tags ({count})",
     allTagSearchPlaceholder: "Search tags",
@@ -318,6 +330,7 @@ function saveSessionState() {
       filters: {
         distance: el.allFilterDistance?.value || "",
         wait: el.allFilterWait?.value || "",
+        operation: el.allFilterOperation?.value || "",
         sort: el.allSort?.value || "distance",
         name: el.allSearchName?.value || "",
         tagSearch: el.allTagSearch?.value || "",
@@ -377,6 +390,7 @@ function applyLoadedSession(snapshot) {
   const f = snapshot.filters && typeof snapshot.filters === "object" ? snapshot.filters : {};
   if (el.allFilterDistance && typeof f.distance === "string") el.allFilterDistance.value = f.distance;
   if (el.allFilterWait && typeof f.wait === "string") el.allFilterWait.value = f.wait;
+  if (el.allFilterOperation && typeof f.operation === "string") el.allFilterOperation.value = f.operation;
   if (el.allSort && typeof f.sort === "string") el.allSort.value = f.sort;
   if (el.allSearchName && typeof f.name === "string") el.allSearchName.value = f.name;
   if (el.allTagSearch && typeof f.tagSearch === "string") el.allTagSearch.value = f.tagSearch;
@@ -433,6 +447,7 @@ function applyLanguage() {
   el.allFilterNameLabel.textContent = t("allFilterNameLabel");
   el.allFilterDistanceLabel.textContent = t("allFilterDistanceLabel");
   el.allFilterWaitLabel.textContent = t("allFilterWaitLabel");
+  el.allFilterOperationLabel.textContent = t("allFilterOperationLabel");
   el.allFilterTagLabel.textContent = t("allFilterTagLabel");
   el.allSortLabel.textContent = t("allSortLabel");
   if (el.allSearchName) el.allSearchName.placeholder = t("allFilterNamePlaceholder");
@@ -447,6 +462,12 @@ function applyLanguage() {
   const allOption = (sel) => sel?.options?.[0] && (sel.options[0].text = t("allOptionAll"));
   allOption(el.allFilterDistance);
   allOption(el.allFilterWait);
+  if (el.allFilterOperation) {
+    const opts = el.allFilterOperation.options;
+    if (opts[0]) opts[0].text = t("allStatusAll");
+    if (opts[1]) opts[1].text = t("allStatusOperating");
+    if (opts[2]) opts[2].text = t("allStatusNotOperating");
+  }
   el.nextBtn.textContent = t("nextReco");
   el.loadingText.textContent = t("loading");
   el.detailCloseBtn.setAttribute("aria-label", t("close"));
@@ -513,6 +534,20 @@ function toWaitText(v) {
 function toDistanceText(v) {
   if (v == null) return t("distNone");
   return v < 1000 ? `${Math.round(v)}m` : `${(v / 1000).toFixed(2)}km`;
+}
+
+function operationKind(status) {
+  const s = String(status || "").toUpperCase();
+  if (s === "OPERATING" || s === "OPEN") return "operating";
+  if (s === "CLOSED" || s === "DOWN" || s === "REFURBISHMENT") return "not_operating";
+  return "unknown";
+}
+
+function statusText(status) {
+  const kind = operationKind(status);
+  if (kind === "operating") return t("allStatusOperating");
+  if (kind === "not_operating") return t("allStatusNotOperating");
+  return t("allStatusUnknown");
 }
 
 function fmtClock(d) {
@@ -712,6 +747,11 @@ function renderCards(target, items, blacklistMode = false, showBan = true) {
     }
     node.querySelector(".name").textContent = item.name;
     node.querySelector(".wait").textContent = toWaitText(item.wait_time_min);
+    const statusEl = node.querySelector(".status");
+    if (statusEl) {
+      const kind = operationKind(item.status);
+      statusEl.innerHTML = `<span class="status-pill ${kind}">${statusText(item.status)}</span>`;
+    }
     node.querySelector(".distance").textContent = `${t("distPrefix")}: ${toDistanceText(item.distance_m)}`;
     node.querySelector(".tags").textContent = (item.type_tags || [])
       .slice(0, 5)
@@ -809,6 +849,7 @@ function getFilteredAllAttractions() {
   };
   const maxDistance = parseFilterNum(el.allFilterDistance?.value);
   const maxWait = parseFilterNum(el.allFilterWait?.value);
+  const operation = el.allFilterOperation?.value || "";
   const tags = [...state.allFilterTags];
   const nameQuery = (el.allSearchName?.value || "").trim().toLowerCase();
   const sort = el.allSort?.value || "distance";
@@ -822,6 +863,11 @@ function getFilteredAllAttractions() {
   }
   if (maxWait != null) {
     items = items.filter((x) => x.wait_time_min == null || x.wait_time_min <= maxWait);
+  }
+  if (operation === "operating") {
+    items = items.filter((x) => operationKind(x.status) === "operating");
+  } else if (operation === "not_operating") {
+    items = items.filter((x) => operationKind(x.status) !== "operating");
   }
   if (tags.length > 0) {
     items = items.filter((x) => Array.isArray(x.type_tags) && tags.some((tag) => x.type_tags.includes(tag)));
@@ -1145,7 +1191,7 @@ el.tabStageBtn.addEventListener("click", () => setActiveTab("stage"));
 el.tabParadeBtn.addEventListener("click", () => setActiveTab("parade"));
 el.tabNightBtn.addEventListener("click", () => setActiveTab("night"));
 
-for (const ctrl of [el.allFilterDistance, el.allFilterWait, el.allSort]) {
+for (const ctrl of [el.allFilterDistance, el.allFilterWait, el.allFilterOperation, el.allSort]) {
   ctrl?.addEventListener("change", () => {
     renderAllAttractions();
     saveSessionState();

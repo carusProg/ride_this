@@ -333,7 +333,31 @@ button { cursor: pointer; }
 .card-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .name { margin: 0; font-size: 1rem; }
 .wait { font-weight: 700; color: var(--accent-2); }
-.distance, .tags { margin: 8px 0; font-size: .9rem; color: var(--muted); }
+.status, .distance, .tags { margin: 8px 0; font-size: .9rem; color: var(--muted); }
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .01em;
+}
+.status-pill.operating {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+.status-pill.not_operating {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+.status-pill.unknown {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
 .tags { white-space: pre-line; }
 .actions { display: flex; gap: 8px; }
 .actions > .danger { margin-left: auto; }
