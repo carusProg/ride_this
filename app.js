@@ -2,6 +2,7 @@ const API_BASE = "https://jpccvcwnxbbkuwdhjdfz.functions.supabase.co";
 const FN_RECO = `${API_BASE}/recommendations`;
 const FN_ENT = `${API_BASE}/entertainment`;
 const FN_ATTR = `${API_BASE}/attractions`;
+const SESSION_STORAGE_KEY = "ridethis_session_v1";
 
 const state = {
   profile: null,
@@ -302,12 +303,95 @@ function syncLangToUrl() {
   window.history.replaceState({}, "", u.toString());
 }
 
+function saveSessionState() {
+  try {
+    const payload = {
+      lang: state.lang,
+      profile: state.profile,
+      currentLocation: state.currentLocation,
+      blacklistIds: [...state.blacklistIds],
+      selectedTags: [...state.selectedTags],
+      mustRideTags: [...state.mustRideTags],
+      avoidTags: [...state.avoidTags],
+      activeTab: state.activeTab,
+      allFilterTags: [...state.allFilterTags],
+      filters: {
+        distance: el.allFilterDistance?.value || "",
+        wait: el.allFilterWait?.value || "",
+        sort: el.allSort?.value || "distance",
+        name: el.allSearchName?.value || "",
+        tagSearch: el.allTagSearch?.value || "",
+        tagOpen: !!el.allTagDetails?.open,
+      },
+    };
+    window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(payload));
+  } catch {
+    // no-op
+  }
+}
+
+function loadSessionState() {
+  try {
+    const raw = window.localStorage.getItem(SESSION_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function clearSessionState() {
+  try {
+    window.localStorage.removeItem(SESSION_STORAGE_KEY);
+  } catch {
+    // no-op
+  }
+}
+
+function applyLoadedSession(snapshot) {
+  if (!snapshot || typeof snapshot !== "object") return false;
+
+  if (snapshot.profile && typeof snapshot.profile === "object") {
+    state.profile = snapshot.profile;
+    if (el.form) {
+      const ageInput = el.form.querySelector('input[name="age"]');
+      const heightInput = el.form.querySelector('input[name="height_cm"]');
+      if (ageInput && Number.isFinite(snapshot.profile.age)) ageInput.value = String(snapshot.profile.age);
+      if (heightInput && Number.isFinite(snapshot.profile.height_cm)) heightInput.value = String(snapshot.profile.height_cm);
+    }
+  }
+  if (snapshot.currentLocation && typeof snapshot.currentLocation === "object") {
+    const { lat, lng } = snapshot.currentLocation;
+    if (Number.isFinite(lat) && Number.isFinite(lng)) {
+      state.currentLocation = { lat, lng };
+    }
+  }
+  state.blacklistIds = new Set(Array.isArray(snapshot.blacklistIds) ? snapshot.blacklistIds : []);
+  state.selectedTags = new Set(Array.isArray(snapshot.selectedTags) ? snapshot.selectedTags : []);
+  state.mustRideTags = new Set(Array.isArray(snapshot.mustRideTags) ? snapshot.mustRideTags : []);
+  state.avoidTags = new Set(Array.isArray(snapshot.avoidTags) ? snapshot.avoidTags : []);
+  state.allFilterTags = new Set(Array.isArray(snapshot.allFilterTags) ? snapshot.allFilterTags : []);
+  state.activeTab = typeof snapshot.activeTab === "string" ? snapshot.activeTab : "reco";
+
+  const f = snapshot.filters && typeof snapshot.filters === "object" ? snapshot.filters : {};
+  if (el.allFilterDistance && typeof f.distance === "string") el.allFilterDistance.value = f.distance;
+  if (el.allFilterWait && typeof f.wait === "string") el.allFilterWait.value = f.wait;
+  if (el.allSort && typeof f.sort === "string") el.allSort.value = f.sort;
+  if (el.allSearchName && typeof f.name === "string") el.allSearchName.value = f.name;
+  if (el.allTagSearch && typeof f.tagSearch === "string") el.allTagSearch.value = f.tagSearch;
+  if (el.allTagDetails) el.allTagDetails.open = !!f.tagOpen;
+
+  return !!state.profile;
+}
+
 async function changeLanguage(nextLang) {
   if (state.lang === nextLang) return;
   state.lang = nextLang;
   syncLangToUrl();
   applyLanguage();
   renderTagCheckboxes();
+  saveSessionState();
 
   if (!el.results.classList.contains("hidden") && state.profile) {
     try {
@@ -464,6 +548,7 @@ function setActiveTab(tab) {
   }
   const showNext = tab === "reco" && !el.results.classList.contains("hidden");
   el.nextBtn.classList.toggle("hidden", !showNext);
+  saveSessionState();
 }
 
 function haversineMeters(lat1, lon1, lat2, lon2) {
@@ -681,6 +766,7 @@ function populateAllTagFilter() {
     state.allFilterTags.clear();
     populateAllTagFilter();
     renderAllAttractions();
+    saveSessionState();
   });
   el.allFilterTags.appendChild(allBtn);
 
@@ -705,6 +791,7 @@ function populateAllTagFilter() {
       else state.allFilterTags.add(code);
       populateAllTagFilter();
       renderAllAttractions();
+      saveSessionState();
     });
     el.allFilterTags.appendChild(btn);
   }
@@ -790,6 +877,7 @@ function renderTagCheckboxes() {
             renderTagCheckboxes();
           }
         }
+        saveSessionState();
       });
       container.appendChild(item);
     }
@@ -959,6 +1047,7 @@ async function refreshRecommendations(mode = "normal") {
 
   state.lastRefreshedAt = new Date();
   updateRefreshMeta();
+  saveSessionState();
 
   window.__lastReco = data;
   el.onboarding.classList.add("hidden");
@@ -1000,6 +1089,7 @@ el.form.addEventListener("submit", async (e) => {
   e.preventDefault();
   state.profile = formToProfile(el.form);
   state.currentLocation = await getCurrentLocation();
+  saveSessionState();
 
   try {
     await refreshAll("normal");
@@ -1056,10 +1146,19 @@ el.tabParadeBtn.addEventListener("click", () => setActiveTab("parade"));
 el.tabNightBtn.addEventListener("click", () => setActiveTab("night"));
 
 for (const ctrl of [el.allFilterDistance, el.allFilterWait, el.allSort]) {
-  ctrl?.addEventListener("change", () => renderAllAttractions());
+  ctrl?.addEventListener("change", () => {
+    renderAllAttractions();
+    saveSessionState();
+  });
 }
-el.allSearchName?.addEventListener("input", () => renderAllAttractions());
-el.allTagSearch?.addEventListener("input", () => populateAllTagFilter());
+el.allSearchName?.addEventListener("input", () => {
+  renderAllAttractions();
+  saveSessionState();
+});
+el.allTagSearch?.addEventListener("input", () => {
+  populateAllTagFilter();
+  saveSessionState();
+});
 
 el.langKoBtn.addEventListener("click", () => {
   changeLanguage("ko");
@@ -1070,43 +1169,8 @@ el.langEnBtn.addEventListener("click", () => {
 });
 
 el.resetBtn.addEventListener("click", () => {
-  state.currentVisibleIds.clear();
-  state.blacklistIds.clear();
-  state.selectedTags.clear();
-  state.mustRideTags.clear();
-  state.avoidTags.clear();
-  state.profile = null;
-  state.entertainment = null;
-  state.entertainmentError = "";
-  state.allAttractions = [];
-  state.allFilterTags.clear();
-  state.lastRefreshedAt = null;
-  window.__lastReco = null;
-  if (el.allSearchName) el.allSearchName.value = "";
-  if (el.allTagSearch) el.allTagSearch.value = "";
-
-  el.form.reset();
-  showError("");
-  el.cards.innerHTML = "";
-  el.blacklist.innerHTML = "";
-  el.specialWrap.innerHTML = "";
-  el.stageCards.innerHTML = "";
-  el.paradeCard.innerHTML = "";
-  el.nightCard.innerHTML = "";
-  el.closedCards.innerHTML = "";
-  el.allAttrCards.innerHTML = "";
-  if (el.detailDialog.open) el.detailDialog.close();
-  el.step2.classList.add("hidden");
-  el.step1.classList.remove("hidden");
-  el.stepNow.textContent = "1";
-  el.results.classList.add("hidden");
-  el.onboarding.classList.remove("hidden");
-  el.nextBtn.classList.add("hidden");
-  el.blacklistTitle.classList.add("hidden");
-  el.blacklist.classList.add("hidden");
-  setActiveTab("reco");
-  renderTagCheckboxes();
-  updateRefreshMeta();
+  clearSessionState();
+  window.location.reload();
 });
 
 el.detailCloseBtn.addEventListener("click", () => {
@@ -1122,9 +1186,27 @@ el.detailDialog.addEventListener("cancel", () => {
 });
 
 window.__lastReco = null;
+const loadedSession = loadSessionState();
 state.lang = detectInitialLang();
+if (!new URL(window.location.href).searchParams.get("lang") && typeof loadedSession?.lang === "string") {
+  state.lang = parseLang(loadedSession.lang);
+}
+const hasRestoredMainSession = applyLoadedSession(loadedSession);
 syncLangToUrl();
 applyLanguage();
 renderTagCheckboxes();
 updateRefreshMeta();
-setActiveTab("reco");
+setActiveTab(hasRestoredMainSession ? state.activeTab : "reco");
+if (hasRestoredMainSession) {
+  el.onboarding.classList.add("hidden");
+  el.results.classList.remove("hidden");
+  showError("");
+  (async () => {
+    if (!state.currentLocation) state.currentLocation = await getCurrentLocation();
+    try {
+      await refreshAll("normal");
+    } catch {
+      // error already rendered
+    }
+  })();
+}
