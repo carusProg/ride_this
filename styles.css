@@ -76,11 +76,11 @@ body {
   border: 0;
   background: transparent;
   color: #627095;
-  padding: 7px 12px;
+  padding: 7px 10px;
   border-radius: 10px;
   font-size: .82rem;
   font-weight: 700;
-  min-width: 52px;
+  min-width: 42px;
 }
 .lang-btn.active {
   color: #ffffff;

@@ -28,6 +28,8 @@ const el = {
   backNav: document.getElementById("backNav"),
   langKoBtn: document.getElementById("langKoBtn"),
   langEnBtn: document.getElementById("langEnBtn"),
+  langZhCnBtn: document.getElementById("langZhCnBtn"),
+  langZhHkBtn: document.getElementById("langZhHkBtn"),
   onboarding: document.getElementById("onboarding"),
   results: document.getElementById("results"),
   form: document.getElementById("profileForm"),
@@ -99,27 +101,27 @@ const el = {
 };
 
 const TAG_OPTIONS = [
-  { code: "thrill_high", ko: "스릴 강함", en: "High Thrill" },
-  { code: "drop_high", ko: "큰 낙하", en: "Big Drops" },
-  { code: "drop_small", ko: "작은 낙하", en: "Small Drops" },
-  { code: "spin", ko: "회전", en: "Spinning" },
-  { code: "water_ride", ko: "워터 라이드", en: "Water Ride" },
-  { code: "dark", ko: "어두움", en: "Dark" },
-  { code: "loud", ko: "소리 큼", en: "Loud" },
-  { code: "scary", ko: "무서움", en: "Scary" },
-  { code: "slow_ride", ko: "완만한 탑승", en: "Slow Ride" },
-  { code: "indoor", ko: "실내", en: "Indoor" },
-  { code: "outdoor", ko: "실외", en: "Outdoor" },
-  { code: "interactive", ko: "상호작용", en: "Interactive" },
-  { code: "discovery", ko: "탐험형", en: "Discovery" },
-  { code: "show", ko: "공연", en: "Show" },
-  { code: "character_meet", ko: "캐릭터 만남", en: "Character Meet" },
-  { code: "transport", ko: "이동형", en: "Transport" },
-  { code: "rider_switch", ko: "라이더 스위치", en: "Rider Switch" },
-  { code: "single_rider", ko: "싱글라이더", en: "Single Rider" },
-  { code: "star_wars", ko: "스타워즈", en: "Star Wars" },
-  { code: "wheelchair_transfer_required", ko: "휠체어 환승 필요", en: "Wheelchair Transfer" },
-  { code: "wheelchair_accessible", ko: "휠체어 이용 가능", en: "Wheelchair Accessible" },
+  { code: "thrill_high", ko: "스릴 강함", en: "High Thrill", zh_cn: "高刺激", zh_hk: "高刺激" },
+  { code: "drop_high", ko: "큰 낙하", en: "Big Drops", zh_cn: "大落差", zh_hk: "大落差" },
+  { code: "drop_small", ko: "작은 낙하", en: "Small Drops", zh_cn: "小落差", zh_hk: "小落差" },
+  { code: "spin", ko: "회전", en: "Spinning", zh_cn: "旋转", zh_hk: "旋轉" },
+  { code: "water_ride", ko: "워터 라이드", en: "Water Ride", zh_cn: "水上项目", zh_hk: "水上設施" },
+  { code: "dark", ko: "어두움", en: "Dark", zh_cn: "黑暗", zh_hk: "黑暗" },
+  { code: "loud", ko: "소리 큼", en: "Loud", zh_cn: "音量大", zh_hk: "音量大" },
+  { code: "scary", ko: "무서움", en: "Scary", zh_cn: "惊悚", zh_hk: "驚悚" },
+  { code: "slow_ride", ko: "완만한 탑승", en: "Slow Ride", zh_cn: "缓和项目", zh_hk: "緩和設施" },
+  { code: "indoor", ko: "실내", en: "Indoor", zh_cn: "室内", zh_hk: "室內" },
+  { code: "outdoor", ko: "실외", en: "Outdoor", zh_cn: "室外", zh_hk: "室外" },
+  { code: "interactive", ko: "상호작용", en: "Interactive", zh_cn: "互动式", zh_hk: "互動式" },
+  { code: "discovery", ko: "탐험형", en: "Discovery", zh_cn: "探索型", zh_hk: "探索型" },
+  { code: "show", ko: "공연", en: "Show", zh_cn: "演出", zh_hk: "表演" },
+  { code: "character_meet", ko: "캐릭터 만남", en: "Character Meet", zh_cn: "角色见面", zh_hk: "角色見面" },
+  { code: "transport", ko: "이동형", en: "Transport", zh_cn: "交通类", zh_hk: "交通類" },
+  { code: "rider_switch", ko: "라이더 스위치", en: "Rider Switch", zh_cn: "乘客轮换", zh_hk: "乘客輪換" },
+  { code: "single_rider", ko: "싱글라이더", en: "Single Rider", zh_cn: "单人通道", zh_hk: "單人通道" },
+  { code: "star_wars", ko: "스타워즈", en: "Star Wars", zh_cn: "星球大战", zh_hk: "星際大戰" },
+  { code: "wheelchair_transfer_required", ko: "휠체어 환승 필요", en: "Wheelchair Transfer", zh_cn: "需轮椅转乘", zh_hk: "需輪椅轉乘" },
+  { code: "wheelchair_accessible", ko: "휠체어 이용 가능", en: "Wheelchair Accessible", zh_cn: "轮椅可使用", zh_hk: "輪椅可使用" },
 ];
 
 const I18N = {
@@ -285,10 +287,172 @@ const I18N = {
     errHeight: "Please enter a valid height.",
     errReco: "Failed to fetch recommendations.",
   },
+  "zh-cn": {
+    pageTitle: "玩这个？",
+    titleMainHtml: "玩这个？",
+    titleSub: "在香港迪士尼乐园，我们会根据你当前的位置和偏好，推荐最适合现在去玩的项目。",
+    surveyTitle: "推荐问卷",
+    step1Title: "你（或孩子）的年龄和身高是？",
+    step2Title: "请选择标签",
+    labelAge: "年龄",
+    labelHeight: "身高（cm）",
+    btnNext: "下一步",
+    btnBack: "返回",
+    btnStart: "开始推荐",
+    selectedLegend: "偏好标签",
+    mustLegend: "必玩标签",
+    avoidLegend: "避开标签",
+    resultsTitle: "香港迪士尼乐园：现在可以这样玩",
+    distanceNotice:
+      "使用距离计算功能需要开启定位权限。\n但当前距离为直线距离（基于坐标）估算，可能与实际步行距离不同。准确距离请在详情页通过 Google 地图步行路线查看。",
+    blacklistTitle: "不再推荐",
+    nextReco: "下一组推荐",
+    refresh: "刷新",
+    reset: "重置",
+    refreshMeta: "最近刷新 {time}",
+    justNow: "刚刚",
+    loading: "正在计算...",
+    waitNone: "暂无等待时间",
+    distNone: "暂无距离信息",
+    distPrefix: "距离",
+    statusLabel: "状态",
+    waitLabel: "等待时间",
+    tagsLabel: "标签",
+    tagsNone: "无标签",
+    reasonPrefix: "推荐原因",
+    ban: "不再推荐",
+    unban: "移除黑名单",
+    special: "特别推荐",
+    noDescription: "暂无说明。",
+    tabReco: "推荐项目",
+    tabAllAttr: "全部项目",
+    tabStage: "舞台演出",
+    tabParade: "巡游",
+    tabNight: "夜间娱乐",
+    stageEmpty: "暂无舞台演出信息。",
+    paradeEmpty: "暂无巡游信息。",
+    nightEmpty: "暂无夜间娱乐信息。",
+    startsIn: "{min} 分钟后开始",
+    liveNow: "正在进行",
+    nextTime: "下一场",
+    fullSchedule: "完整时间表",
+    detailPrefix: "详情",
+    categoryStage: "舞台演出",
+    categoryParade: "巡游",
+    categoryNight: "夜间娱乐",
+    allFilterNameLabel: "名称",
+    allFilterNamePlaceholder: "按名称搜索",
+    allFilterDistanceLabel: "最大距离",
+    allFilterWaitLabel: "最长等待",
+    allFilterOperationLabel: "运营状态",
+    allStatusAll: "全部",
+    allStatusOperating: "运营中",
+    allStatusNotOperating: "未运营",
+    allStatusUnknown: "未知",
+    allFilterTagLabel: "标签",
+    allTagSummary: "标签（{count}）",
+    allTagSearchPlaceholder: "搜索标签",
+    allSortLabel: "排序",
+    allEmpty: "没有可显示的项目。",
+    allOptionAll: "全部",
+    allSortDistance: "按距离",
+    allSortWait: "按等待时间",
+    allSortName: "按名称",
+    allSortPopularity: "按评分",
+    closedTitle: "关闭设施",
+    closedEmpty: "暂无关闭设施信息。",
+    closedLabel: "关闭",
+    openInGoogleMaps: "在 Google 地图中打开步行路线",
+    close: "关闭",
+    errAge: "请输入有效年龄。",
+    errHeight: "请输入有效身高。",
+    errReco: "获取推荐失败。",
+  },
+  "zh-hk": {
+    pageTitle: "玩這個？",
+    titleMainHtml: "玩這個？",
+    titleSub: "在香港迪士尼樂園，我們會依你目前的位置與偏好，推薦現在最適合玩的設施。",
+    surveyTitle: "推薦問卷",
+    step1Title: "你（或孩子）的年齡和身高是？",
+    step2Title: "請選擇標籤",
+    labelAge: "年齡",
+    labelHeight: "身高（cm）",
+    btnNext: "下一步",
+    btnBack: "返回",
+    btnStart: "開始推薦",
+    selectedLegend: "偏好標籤",
+    mustLegend: "必玩標籤",
+    avoidLegend: "避開標籤",
+    resultsTitle: "香港迪士尼樂園：現在可以這樣玩",
+    distanceNotice:
+      "使用距離計算功能需要開啟定位權限。\n但目前距離為直線距離（座標估算），可能與實際步行距離不同。準確距離請在詳情頁透過 Google 地圖步行路線查看。",
+    blacklistTitle: "不再推薦",
+    nextReco: "下一組推薦",
+    refresh: "重新整理",
+    reset: "重設",
+    refreshMeta: "最近更新 {time}",
+    justNow: "剛剛",
+    loading: "正在計算...",
+    waitNone: "暫無等候時間",
+    distNone: "暫無距離資訊",
+    distPrefix: "距離",
+    statusLabel: "狀態",
+    waitLabel: "等候時間",
+    tagsLabel: "標籤",
+    tagsNone: "無標籤",
+    reasonPrefix: "推薦原因",
+    ban: "不再推薦",
+    unban: "移除黑名單",
+    special: "特別推薦",
+    noDescription: "暫無說明。",
+    tabReco: "推薦設施",
+    tabAllAttr: "全部設施",
+    tabStage: "舞台表演",
+    tabParade: "巡遊",
+    tabNight: "夜間娛樂",
+    stageEmpty: "暫無舞台表演資訊。",
+    paradeEmpty: "暫無巡遊資訊。",
+    nightEmpty: "暫無夜間娛樂資訊。",
+    startsIn: "{min} 分鐘後開始",
+    liveNow: "正在進行",
+    nextTime: "下一場",
+    fullSchedule: "完整時間表",
+    detailPrefix: "詳情",
+    categoryStage: "舞台表演",
+    categoryParade: "巡遊",
+    categoryNight: "夜間娛樂",
+    allFilterNameLabel: "名稱",
+    allFilterNamePlaceholder: "依名稱搜尋",
+    allFilterDistanceLabel: "最大距離",
+    allFilterWaitLabel: "最長等候",
+    allFilterOperationLabel: "營運狀態",
+    allStatusAll: "全部",
+    allStatusOperating: "營運中",
+    allStatusNotOperating: "未營運",
+    allStatusUnknown: "未知",
+    allFilterTagLabel: "標籤",
+    allTagSummary: "標籤（{count}）",
+    allTagSearchPlaceholder: "搜尋標籤",
+    allSortLabel: "排序",
+    allEmpty: "沒有可顯示的設施。",
+    allOptionAll: "全部",
+    allSortDistance: "依距離",
+    allSortWait: "依等候時間",
+    allSortName: "依名稱",
+    allSortPopularity: "依分數",
+    closedTitle: "關閉設施",
+    closedEmpty: "暫無關閉設施資訊。",
+    closedLabel: "關閉",
+    openInGoogleMaps: "在 Google 地圖開啟步行路線",
+    close: "關閉",
+    errAge: "請輸入有效年齡。",
+    errHeight: "請輸入有效身高。",
+    errReco: "取得推薦失敗。",
+  },
 };
 
 function t(key) {
-  return I18N[state.lang][key] || key;
+  return (I18N[state.lang] && I18N[state.lang][key]) || I18N.en[key] || key;
 }
 
 function tr(key, vars = {}) {
@@ -314,7 +478,11 @@ function iconSvg(name) {
 }
 
 function parseLang(v) {
-  return v && v.toLowerCase() === "ko" ? "ko" : "en";
+  const s = String(v || "").toLowerCase();
+  if (s === "ko") return "ko";
+  if (["zh-hk", "zh-tw", "zh-mo", "zh-hant", "tw", "cht"].includes(s)) return "zh-hk";
+  if (["zh", "zh-cn", "zh-hans", "cn", "chs"].includes(s)) return "zh-cn";
+  return "en";
 }
 
 function detectInitialLang() {
@@ -322,13 +490,23 @@ function detectInitialLang() {
   const qLang = u.searchParams.get("lang");
   if (qLang) return parseLang(qLang);
   const navLang = (navigator.language || "").toLowerCase();
-  return navLang.startsWith("ko") ? "ko" : "en";
+  if (navLang.startsWith("ko")) return "ko";
+  if (navLang.startsWith("zh")) {
+    if (navLang.includes("hant") || navLang.includes("tw") || navLang.includes("hk") || navLang.includes("mo")) {
+      return "zh-hk";
+    }
+    return "zh-cn";
+  }
+  return "en";
 }
 
 function tagLabel(code) {
   const x = TAG_OPTIONS.find((t) => t.code === code);
   if (!x) return code;
-  return state.lang === "en" ? x.en : x.ko;
+  if (state.lang === "ko") return x.ko;
+  if (state.lang === "zh-cn") return x.zh_cn || x.en;
+  if (state.lang === "zh-hk") return x.zh_hk || x.en;
+  return x.en;
 }
 
 function syncLangToUrl() {
@@ -444,6 +622,8 @@ function applyLanguage() {
   el.titleMain.innerHTML = t("titleMainHtml");
   el.langKoBtn.classList.toggle("active", state.lang === "ko");
   el.langEnBtn.classList.toggle("active", state.lang === "en");
+  el.langZhCnBtn?.classList.toggle("active", state.lang === "zh-cn");
+  el.langZhHkBtn?.classList.toggle("active", state.lang === "zh-hk");
   el.titleSub.textContent = t("titleSub");
   el.surveyTitle.textContent = t("surveyTitle");
   el.step1Title.textContent = t("step1Title");
@@ -555,7 +735,11 @@ async function getCurrentLocation() {
 }
 
 function toWaitText(v) {
-  return v == null ? t("waitNone") : state.lang === "en" ? `${v} min` : `${v}분`;
+  if (v == null) return t("waitNone");
+  if (state.lang === "ko") return `${v}분`;
+  if (state.lang === "zh-cn") return `${v} 分钟`;
+  if (state.lang === "zh-hk") return `${v} 分鐘`;
+  return `${v} min`;
 }
 
 function toDistanceText(v) {
@@ -579,7 +763,14 @@ function statusText(status) {
 
 function fmtClock(d) {
   if (!d) return t("justNow");
-  return d.toLocaleTimeString(state.lang === "ko" ? "ko-KR" : "en-US", {
+  const locale = state.lang === "ko"
+    ? "ko-KR"
+    : state.lang === "zh-cn"
+    ? "zh-CN"
+    : state.lang === "zh-hk"
+    ? "zh-TW"
+    : "en-US";
+  return d.toLocaleTimeString(locale, {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
@@ -641,7 +832,14 @@ function fmtTimeIso(iso) {
   if (!iso) return "-";
   const d = new Date(iso);
   if (!Number.isFinite(d.getTime())) return "-";
-  return d.toLocaleTimeString(state.lang === "ko" ? "ko-KR" : "en-US", {
+  const locale = state.lang === "ko"
+    ? "ko-KR"
+    : state.lang === "zh-cn"
+    ? "zh-CN"
+    : state.lang === "zh-hk"
+    ? "zh-TW"
+    : "en-US";
+  return d.toLocaleTimeString(locale, {
     timeZone: "Asia/Hong_Kong",
     hour: "2-digit",
     minute: "2-digit",
@@ -949,7 +1147,7 @@ function renderTagCheckboxes() {
       const item = document.createElement("button");
       item.type = "button";
       item.className = "tag-pill";
-      item.textContent = state.lang === "en" ? tag.en : tag.ko;
+      item.textContent = tagLabel(tag.code);
       if (setRef.has(tag.code)) item.classList.add("active");
       item.addEventListener("click", () => {
         if (setRef.has(tag.code)) {
@@ -1257,6 +1455,14 @@ el.langKoBtn.addEventListener("click", () => {
 
 el.langEnBtn.addEventListener("click", () => {
   changeLanguage("en");
+});
+
+el.langZhCnBtn?.addEventListener("click", () => {
+  changeLanguage("zh-cn");
+});
+
+el.langZhHkBtn?.addEventListener("click", () => {
+  changeLanguage("zh-hk");
 });
 
 el.resetBtn.addEventListener("click", () => {
