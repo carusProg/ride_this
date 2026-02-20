@@ -291,6 +291,21 @@ function tr(key, vars = {}) {
   return out;
 }
 
+function iconSvg(name) {
+  if (name === "back") {
+    return `
+      <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M10 6L4 12L10 18V14H15C16.66 14 18 15.34 18 17V20H22V17C22 13.13 18.87 10 15 10H10V6Z"></path>
+      </svg>
+    `;
+  }
+  return `
+    <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M17.65 6.35A7.95 7.95 0 0012 4a8 8 0 108 8h-3a5 5 0 11-1.46-3.54L13 11h7V4l-2.35 2.35Z"></path>
+    </svg>
+  `;
+}
+
 function parseLang(v) {
   return v && v.toLowerCase() === "ko" ? "ko" : "en";
 }
@@ -435,8 +450,12 @@ function applyLanguage() {
   el.legendMust.textContent = t("mustLegend");
   el.legendAvoid.textContent = t("avoidLegend");
   el.resultsTitle.textContent = t("resultsTitle");
-  el.refreshBtn.textContent = t("refresh");
-  el.resetBtn.textContent = t("reset");
+  el.refreshBtn.innerHTML = iconSvg("refresh");
+  el.refreshBtn.setAttribute("aria-label", t("refresh"));
+  el.refreshBtn.setAttribute("title", t("refresh"));
+  el.resetBtn.innerHTML = iconSvg("back");
+  el.resetBtn.setAttribute("aria-label", t("reset"));
+  el.resetBtn.setAttribute("title", t("reset"));
   el.closedTitle.textContent = t("closedTitle");
   el.blacklistTitle.textContent = t("blacklistTitle");
   el.tabRecoBtn.textContent = t("tabReco");
@@ -609,6 +628,7 @@ function fmtTimeIso(iso) {
   const d = new Date(iso);
   if (!Number.isFinite(d.getTime())) return "-";
   return d.toLocaleTimeString(state.lang === "ko" ? "ko-KR" : "en-US", {
+    timeZone: "Asia/Hong_Kong",
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
@@ -634,6 +654,16 @@ function formatScheduleLine(s) {
   const windowText = end ? `${start} - ${end}` : start;
   const type = s?.type ? ` (${s.type})` : "";
   return `${windowText}${type}`;
+}
+
+function showDialogAtCurrentScroll(dialog) {
+  if (!dialog || typeof dialog.showModal !== "function") return;
+  const prevX = window.scrollX;
+  const prevY = window.scrollY;
+  dialog.showModal();
+  // Some mobile browsers jump scroll when <dialog> receives focus.
+  requestAnimationFrame(() => window.scrollTo(prevX, prevY));
+  setTimeout(() => window.scrollTo(prevX, prevY), 0);
 }
 
 function googleMapsWalkingUrl(item) {
@@ -697,7 +727,7 @@ function openDetailDialog(item) {
     <p><strong>${t("tagsLabel")}:</strong> ${tags}</p>
     ${mapsHtml}
   `;
-  if (typeof el.detailDialog.showModal === "function") el.detailDialog.showModal();
+  showDialogAtCurrentScroll(el.detailDialog);
 }
 
 function openEntertainmentDetailDialog(item) {
@@ -724,7 +754,7 @@ function openEntertainmentDetailDialog(item) {
     <p><strong>${t("fullSchedule")}:</strong>${schedules}</p>
     ${mapsHtml}
   `;
-  if (typeof el.detailDialog.showModal === "function") el.detailDialog.showModal();
+  showDialogAtCurrentScroll(el.detailDialog);
 }
 
 function renderCards(target, items, blacklistMode = false, showBan = true) {
