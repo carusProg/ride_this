@@ -4,10 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RideThis?</title>
-  <link rel="stylesheet" href="./styles.css?v=20260219y" />
+  <link rel="stylesheet" href="./styles.css?v=20260220i" />
 </head>
 <body>
   <div class="bg"></div>
+  <nav id="backNav" class="back-nav hidden">
+    <button id="resetBtn" class="secondary icon-btn" type="button" aria-label="Reset" title="Reset"></button>
+  </nav>
   <nav class="global-nav">
     <div class="lang-switch">
       <button id="langKoBtn" class="lang-btn" type="button">KO</button>
@@ -90,11 +93,9 @@
         <button id="tabParadeBtn" class="tab-btn" type="button">Parade</button>
         <button id="tabNightBtn" class="tab-btn" type="button">Night</button>
       </div>
+      <p id="distanceNotice" class="info-note"></p>
 
       <section id="tabRecoPanel">
-        <div class="reco-reset-wrap">
-          <button id="resetBtn" class="secondary icon-btn reset-inline" type="button" aria-label="Reset" title="Reset"></button>
-        </div>
         <div id="specialWrap"></div>
         <div id="cards" class="cards"></div>
         <h3 id="blacklistTitle">Do Not Recommend Again</h3>
@@ -199,6 +200,6 @@
     <div id="detailBody"></div>
   </dialog>
 
-  <script src="./app.js?v=20260219x" type="module"></script>
+  <script src="./app.js?v=20260220i" type="module"></script>
 </body>
 </html>

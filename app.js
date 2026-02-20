@@ -25,6 +25,7 @@ const state = {
 const el = {
   titleMain: document.getElementById("titleMain"),
   titleSub: document.getElementById("titleSub"),
+  backNav: document.getElementById("backNav"),
   langKoBtn: document.getElementById("langKoBtn"),
   langEnBtn: document.getElementById("langEnBtn"),
   onboarding: document.getElementById("onboarding"),
@@ -57,6 +58,7 @@ const el = {
   tabStageBtn: document.getElementById("tabStageBtn"),
   tabParadeBtn: document.getElementById("tabParadeBtn"),
   tabNightBtn: document.getElementById("tabNightBtn"),
+  distanceNotice: document.getElementById("distanceNotice"),
   tabRecoPanel: document.getElementById("tabRecoPanel"),
   tabAllAttrPanel: document.getElementById("tabAllAttrPanel"),
   tabStagePanel: document.getElementById("tabStagePanel"),
@@ -124,7 +126,7 @@ const I18N = {
   ko: {
     pageTitle: "이거탈래?",
     titleMainHtml: "이거탈래?",
-    titleSub: "홍콩 디즈니랜드 방문객을 위한 어트랙션 추천 서비스입니다.",
+    titleSub: "홍콩 디즈니랜드에서, 지금 위치랑 취향 기준으로 오늘 타기 좋은 어트랙션만 골라드릴게요.",
     surveyTitle: "추천 설문",
     step1Title: "당신(혹은 아이)의 나이와 키는?",
     step2Title: "태그를 선택해주세요",
@@ -136,7 +138,9 @@ const I18N = {
     selectedLegend: "선호 태그",
     mustLegend: "꼭 타고 싶은 태그",
     avoidLegend: "회피 태그",
-    resultsTitle: "추천 · 공연 · 퍼레이드 · 야간 엔터테인먼트",
+    resultsTitle: "홍콩 디즈니랜드 지금 즐길 거리",
+    distanceNotice:
+      "거리 계산 기능을 사용하려면 위치 권한이 필수입니다.\n다만 현재 거리는 직선거리(좌표 기반)로 계산되어 실제 도보 거리와 다를 수 있습니다. 정확한 거리는 상세 화면에서 구글맵 도보 경로로 확인해 주세요.",
     blacklistTitle: "다시 추천 안함",
     nextReco: "다음추천",
     refresh: "새로고침",
@@ -203,7 +207,7 @@ const I18N = {
   en: {
     pageTitle: "RideThis?",
     titleMainHtml: "RideThis?",
-    titleSub: "An attraction recommendation service for Hong Kong Disneyland visitors.",
+    titleSub: "At Hong Kong Disneyland, we pick the best rides for right now based on your location and preferences.",
     surveyTitle: "Recommendation Survey",
     step1Title: "What are your (or your child's) age and height?",
     step2Title: "Choose your tags",
@@ -215,7 +219,9 @@ const I18N = {
     selectedLegend: "Preferred Tags",
     mustLegend: "Must-Ride Tags",
     avoidLegend: "Avoid Tags",
-    resultsTitle: "Attractions, Stage Shows, Parade, Night Entertainment",
+    resultsTitle: "Hong Kong Disneyland: What to Enjoy Right Now",
+    distanceNotice:
+      "Location permission is required to use distance calculation. Distances are currently straight-line estimates and may differ from actual walking routes. For exact distance, check the walking route via Google Maps in the detail view.",
     blacklistTitle: "Do Not Recommend Again",
     nextReco: "Next Picks",
     refresh: "Refresh",
@@ -295,7 +301,8 @@ function iconSvg(name) {
   if (name === "back") {
     return `
       <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path d="M10 6L4 12L10 18V14H15C16.66 14 18 15.34 18 17V20H22V17C22 13.13 18.87 10 15 10H10V6Z"></path>
+        <path d="M20 12H6" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M12 6L6 12L12 18" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"></path>
       </svg>
     `;
   }
@@ -463,6 +470,7 @@ function applyLanguage() {
   el.tabStageBtn.textContent = t("tabStage");
   el.tabParadeBtn.textContent = t("tabParade");
   el.tabNightBtn.textContent = t("tabNight");
+  if (el.distanceNotice) el.distanceNotice.textContent = t("distanceNotice");
   el.allFilterNameLabel.textContent = t("allFilterNameLabel");
   el.allFilterDistanceLabel.textContent = t("allFilterDistanceLabel");
   el.allFilterWaitLabel.textContent = t("allFilterWaitLabel");
@@ -584,6 +592,12 @@ function updateRefreshMeta() {
   el.refreshMeta.textContent = tr("refreshMeta", {
     time: fmtClock(state.lastRefreshedAt),
   });
+}
+
+function updateBackNavVisibility() {
+  if (!el.backNav || !el.results) return;
+  const show = !el.results.classList.contains("hidden");
+  el.backNav.classList.toggle("hidden", !show);
 }
 
 function setActiveTab(tab) {
@@ -1129,6 +1143,7 @@ async function refreshRecommendations(mode = "normal") {
   el.onboarding.classList.add("hidden");
   el.results.classList.remove("hidden");
   el.nextBtn.classList.toggle("hidden", state.activeTab !== "reco");
+  updateBackNavVisibility();
   return data;
 }
 
@@ -1276,6 +1291,7 @@ setActiveTab(hasRestoredMainSession ? state.activeTab : "reco");
 if (hasRestoredMainSession) {
   el.onboarding.classList.add("hidden");
   el.results.classList.remove("hidden");
+  updateBackNavVisibility();
   showError("");
   (async () => {
     if (!state.currentLocation) state.currentLocation = await getCurrentLocation();
@@ -1285,4 +1301,6 @@ if (hasRestoredMainSession) {
       // error already rendered
     }
   })();
+} else {
+  updateBackNavVisibility();
 }
